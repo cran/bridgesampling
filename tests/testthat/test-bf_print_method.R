@@ -1,7 +1,7 @@
 
 context('bridge sampling print method')
 
-test_that("bridge sampler print method correctly displayed", {
+test_that("bf print method correctly displayed", {
 
   # library(bridgesampling)
   library(mvtnorm)
@@ -23,9 +23,11 @@ test_that("bridge sampler print method correctly displayed", {
   bridge_warp3 <- bridge_sampler(samples = x, log_posterior = log_density,
                                   data = NULL, lb = lb, ub = ub,
                                  method = "warp3", silent = TRUE)
+  BF <- bf(bridge_normal, bridge_warp3)
+  log_BF <- bf(bridge_normal, bridge_warp3, log = TRUE)
 
-  expect_output(print(bridge_normal), "Bridge sampling estimate of the log marginal likelihood")
-  expect_output(print(bridge_warp3), "Bridge sampling estimate of the log marginal likelihood")
+  expect_output(print(BF), "The estimated Bayes factor")
+  expect_output(print(log_BF), "The estimated log Bayes factor")
 
   # repetitions > 1
   bridge_normal <- bridge_sampler(samples = x, log_posterior = log_density,
@@ -35,17 +37,17 @@ test_that("bridge sampler print method correctly displayed", {
                                  data = NULL, lb = lb, ub = ub,
                                  method = "warp3", silent = TRUE, repetitions = 2)
 
-  expect_output(print(bridge_normal), "Median of")
-  expect_output(print(bridge_warp3), "Median of")
+  BF <- bf(bridge_normal, bridge_warp3)
+  log_BF <- bf(bridge_normal, bridge_warp3, log = TRUE)
 
-})
+  expect_output(print(BF), "based on the medians")
+  expect_output(print(log_BF), "based on the medians")
 
-test_that("prints with NAs with warning.", {
-  bridge_o <- structure(list(logml = c(4291.14352476047, 4293.29076119542,
-4291.96372581169, 4293.02187182362, NA, NA, 4290.9761730488,
-4293.32075269401, 4293.5762219227, 4294.02761288449), niter = c(104,
-16, 52, 8, 1000, 1000, 167, 16, 21, 44), method = "normal", repetitions = 10), .Names = c("logml",
-"niter", "method", "repetitions"), class = "bridge_list")
+  # default
+  BF <- bf(1, 2)
+  log_BF <- bf(1, 2, log = TRUE)
 
-  expect_warning(print(bridge_o), "NA")
+  expect_output(print(BF), "The Bayes factor")
+  expect_output(print(log_BF), "The log Bayes factor")
+
 })
