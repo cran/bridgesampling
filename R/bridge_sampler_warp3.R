@@ -1,19 +1,33 @@
 
-.bridge.sampler.warp3 <- function(samples, log_posterior, ..., data, lb, ub,
-                                  repetitions, cores, packages, varlist, envir,
-                                  rcppFile, maxiter, silent, verbose,
-                                  r0, tol) {
+.bridge.sampler.warp3 <- function(
+  samples_4_fit, # matrix with already transformed samples for fitting the
+                 # proposal (rows are samples), colnames are "trans_x" where
+                 # x is the parameter name
+  samples_4_iter, # matrix with already transformed samples for the
+                  # iterative scheme (rows are samples), colnames are "trans_x"
+                  # where x is the parameter name
+  neff, # effective sample size of samples_4_iter (i.e., already transformed samples), scalar
+  log_posterior,
+  ...,
+  data,
+  lb, ub,
+  transTypes, # types of transformations for the different parameters (named character vector)
+  cores,
+  repetitions,
+  packages,
+  varlist,
+  envir,
+  rcppFile,
+  maxiter,
+  silent,
+  verbose,
+  r0,
+  tol1,
+  tol2) {
 
-  # transform parameters to real line
-  tmp <- .transform2Real(samples, lb, ub)
-  theta_t <- tmp$theta_t
-  transTypes <- tmp$transTypes
+  if (is.null(neff))
+    neff <- nrow(samples_4_iter)
 
-  # split samples for proposal/iterative scheme
-  nr <- nrow(samples)
-  samples4fit_index <- seq_len(nr) %in% seq_len(round(nr/2)) # split samples in two parts
-  samples_4_fit <- theta_t[samples4fit_index, ,drop = FALSE]
-  samples_4_iter <- theta_t[!samples4fit_index, , drop = FALSE]
   n_post <- nrow(samples_4_iter)
 
   # get mean & covariance matrix and generate samples from proposal
@@ -175,11 +189,26 @@
   # run iterative updating scheme to compute log of marginal likelihood
   for (i in seq_len(repetitions)) {
     tmp <- .run.iterative.scheme(q11 = q11, q12 = q12, q21 = q21[[i]], q22 = q22[[i]],
-                                 r0 = r0, tol = tol, L = L, method = "warp3",
-                                 maxiter = maxiter, silent = silent)
+                                 r0 = r0, tol = tol1, L = L, method = "warp3",
+                                 maxiter = maxiter, silent = silent,
+                                 criterion = "r", neff = neff)
+    if (is.na(tmp$logml)) {
+      warning("logml could not be estimated within maxiter, rerunning with adjusted starting value. \nEstimate might be more variable than usual.", call. = FALSE)
+      lr <- length(tmp$r_vals)
+      # use geometric mean as starting value
+      r0_2 <- sqrt(tmp$r_vals[lr - 1]*tmp$r_vals[lr])
+      tmp <- .run.iterative.scheme(q11 = q11, q12 = q12, q21 = q21[[i]], q22 = q22[[i]],
+                                   r0 = r0_2, tol = tol2, L = L, method = "warp3",
+                                   maxiter = maxiter, silent = silent,
+                                   criterion = "logml", neff = neff)
+    }
+
     logml[i] <- tmp$logml
     niter[i] <- tmp$niter
+    if (niter[i] == maxiter)
+      warning("logml could not be estimated within maxiter, returning NA.", call. = FALSE)
   }
+
   if (repetitions == 1) {
     out <- list(logml = logml, niter = niter, method = "warp3", q11 = q11,
                 q12 = q12, q21 = q21[[1]], q22 = q22[[1]])

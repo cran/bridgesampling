@@ -2,40 +2,76 @@
 % Please edit documentation in R/bridge_sampler.R
 \name{bridge_sampler}
 \alias{bridge_sampler}
-\alias{bridge_sampler.matrix}
 \alias{bridge_sampler.stanfit}
+\alias{bridge_sampler.mcmc.list}
+\alias{bridge_sampler.matrix}
+\alias{bridge_sampler.stanreg}
+\alias{bridge_sampler.rjags}
+\alias{bridge_sampler.runjags}
 \title{Log Marginal Likelihood via Bridge Sampling}
 \usage{
 bridge_sampler(samples, ...)
 
+\method{bridge_sampler}{stanfit}(samples = NULL, stanfit_model = samples,
+  repetitions = 1, method = "normal", cores = 1, use_neff = TRUE,
+  maxiter = 1000, silent = FALSE, verbose = FALSE, ...)
+
+\method{bridge_sampler}{mcmc.list}(samples = NULL, log_posterior = NULL,
+  ..., data = NULL, lb = NULL, ub = NULL, repetitions = 1,
+  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
+  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL, maxiter = 1000,
+  silent = FALSE, verbose = FALSE)
+
 \method{bridge_sampler}{matrix}(samples = NULL, log_posterior = NULL, ...,
   data = NULL, lb = NULL, ub = NULL, repetitions = 1,
-  method = "normal", cores = 1, packages = NULL, varlist = NULL,
-  envir = .GlobalEnv, rcppFile = NULL, maxiter = 1000, silent = FALSE,
-  verbose = FALSE)
+  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
+  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL, maxiter = 1000,
+  silent = FALSE, verbose = FALSE)
 
-\method{bridge_sampler}{stanfit}(samples = NULL, stanfit_model = samples,
-  repetitions = 1, method = "normal", cores = 1, maxiter = 1000,
+\method{bridge_sampler}{stanreg}(samples, repetitions = 1,
+  method = "normal", cores = 1, use_neff = TRUE, maxiter = 1000,
   silent = FALSE, verbose = FALSE, ...)
+
+\method{bridge_sampler}{rjags}(samples = NULL, log_posterior = NULL, ...,
+  data = NULL, lb = NULL, ub = NULL, repetitions = 1,
+  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
+  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL, maxiter = 1000,
+  silent = FALSE, verbose = FALSE)
+
+\method{bridge_sampler}{runjags}(samples = NULL, log_posterior = NULL, ...,
+  data = NULL, lb = NULL, ub = NULL, repetitions = 1,
+  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
+  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL, maxiter = 1000,
+  silent = FALSE, verbose = FALSE)
 }
 \arguments{
-\item{samples}{a \code{matrix} with posterior samples (\code{colnames} need to correspond to parameter names in \code{lb} and \code{ub}) or a fitted \code{stanfit} object with posterior samples.}
+\item{samples}{an \code{mcmc.list} object, a fitted \code{stanfit} object, a \code{stanreg} object, an \code{rjags} object, a \code{runjags} object, or a \code{matrix} with posterior samples (\code{colnames} need to correspond to parameter names in \code{lb} and \code{ub})  with posterior samples.}
 
-\item{...}{additional arguments passed to \code{log_posterior} for the \code{matrix} method. Ignored for the \code{stanfit} method.}
+\item{...}{additional arguments passed to \code{log_posterior}. Ignored for the \code{stanfit} and \code{stanreg} methods.}
 
-\item{log_posterior}{function or name of function that takes a single row of \code{samples} and the \code{data} and returns the log of the unnormalized posterior density (i.e., a scalar value). If the function name is passed, the function should exist in the \code{.GlobalEnv}. For special behavior if \code{cores > 1} see \code{Details}.}
-
-\item{data}{data object which is used in \code{log_posterior}.}
-
-\item{lb}{named vector with lower bounds for parameters.}
-
-\item{ub}{named vector with upper bounds for parameters.}
+\item{stanfit_model}{for the \code{stanfit} method, an additional object of class \code{"stanfit"} with the same model as \code{samples}, which will be used for evaluating the \code{log_posterior} (i.e., it does not need to contain any samples). The default is to use \code{samples}. In case \code{samples} was compiled in a different R session or on another computer with a different OS or setup, the \code{samples} model usually cannot be used for evaluation. In this case, one can compile the model on the current computer with \code{iter = 0} and pass it here (this usually needs to be done before \code{samples} is loaded).}
 
 \item{repetitions}{number of repetitions.}
 
 \item{method}{either \code{"normal"} or \code{"warp3"}.}
 
 \item{cores}{number of cores used for evaluating \code{log_posterior}. On unix-like systems (where \code{.Platform$OS.type == "unix"} evaluates to \code{TRUE}; e.g., Linux and Mac OS) forking via \code{\link{mclapply}} is used. Hence elements needed for evaluation should be in the \code{\link{.GlobalEnv}}. For other systems (e.g., Windows) \code{\link{makeCluster}} is used and further arguments specified below will be used.}
+
+\item{use_neff}{Boolean which determines whether the effective sample size is used in the optimal bridge function. Default is TRUE. If FALSE, the number of samples is used instead. If \code{samples} is a \code{matrix}, it is assumed that the \code{matrix} contains the samples of one chain in order. If \code{samples} come from more than one chain, we recommend to use an \code{mcmc.list} object for optimal performance.}
+
+\item{maxiter}{maximum number of iterations for the iterative updating scheme. Default is 1,000 to avoid infinite loops.}
+
+\item{silent}{Boolean which determines whether to print the number of iterations of the updating scheme to the console. Default is FALSE.}
+
+\item{verbose}{Boolean. Should internal debug information be printed to console? Default is FALSE.}
+
+\item{log_posterior}{function or name of function that takes a parameter vector and the \code{data} as input and returns the log of the unnormalized posterior density (i.e., a scalar value). If the function name is passed, the function should exist in the \code{.GlobalEnv}. For special behavior if \code{cores > 1} see \code{Details}.}
+
+\item{data}{data object which is used in \code{log_posterior}.}
+
+\item{lb}{named vector with lower bounds for parameters.}
+
+\item{ub}{named vector with upper bounds for parameters.}
 
 \item{packages}{character vector with names of packages needed for evaluating \code{log_posterior} in parallel (only relevant if \code{cores > 1} and \code{.Platform$OS.type != "unix"}).}
 
@@ -44,14 +80,6 @@ bridge_sampler(samples, ...)
 \item{envir}{specifies the environment for \code{varlist} (only needed if \code{cores > 1}  and \code{.Platform$OS.type != "unix"} as these objects will be exported to the nodes). Default is \code{\link{.GlobalEnv}}.}
 
 \item{rcppFile}{in case \code{cores > 1} and \code{log_posterior} is an \code{Rcpp} function, \code{rcppFile} specifies the path to the cpp file (will be compiled on all cores).}
-
-\item{maxiter}{maximum number of iterations for the iterative updating scheme. Default is 1,000 to avoid infinite loops.}
-
-\item{silent}{Boolean which determines whether to print the number of iterations of the updating scheme to the console. Default is FALSE.}
-
-\item{verbose}{Boolean. Should internal debug information be printed to console? Default is FALSE.}
-
-\item{stanfit_model}{for the \code{stanfit} method, an additional object of class \code{"stanfit"} with the same model as \code{samples}, which will be used for evaluating the \code{log_posterior} (i.e., it does not need to contain any samples). The default is to use \code{samples}. In case \code{samples} was compiled in a different R session or on another computer with a different OS or setup, the \code{samples} model usually cannot be used for evaluation. In this case, one can compile the model on the current computer with \code{iter = 0} and pass it here (this usually needs to be done before \code{samples} is loaded).}
 }
 \value{
 if \code{repetitions = 1}, returns a list of class \code{"bridge"} with components:
@@ -59,9 +87,9 @@ if \code{repetitions = 1}, returns a list of class \code{"bridge"} with componen
  \item \code{logml}: estimate of log marginal likelihood.
  \item \code{niter}: number of iterations of the iterative updating scheme.
  \item \code{method}: bridge sampling method that was used to obtain the estimate.
- \item \code{q11}: log_posterior evaluations for posterior samples.
+ \item \code{q11}: log posterior evaluations for posterior samples.
  \item \code{q12}: log proposal evaluations for posterior samples.
- \item \code{q21}: log_posterior evaluations for samples from proposal.
+ \item \code{q21}: log posterior evaluations for samples from proposal.
  \item \code{q22}: log proposal evaluations for samples from proposal.
 }
 if \code{repetitions > 1}, returns a list of class \code{"bridge_list"} with components:
@@ -76,22 +104,32 @@ if \code{repetitions > 1}, returns a list of class \code{"bridge_list"} with com
 Computes log marginal likelihood via bridge sampling.
 }
 \details{
-Bridge sampling is implemented as described in Meng and Wong (1996, see equation 4.1) using the "optimal" bridge function. When \code{method = "normal"}, the proposal distribution is a multivariate normal distribution with mean vector equal to the column means of \code{samples} and covariance matrix equal to the sample covariance matrix of \code{samples}. For a recent tutorial on bridge sampling, see Gronau et al. (2017).
+Bridge sampling is implemented as described in Meng and Wong (1996, see equation 4.1) using the "optimal" bridge function. When \code{method = "normal"}, the proposal distribution is a multivariate normal distribution with mean vector equal to the sample mean vector of \code{samples} and covariance matrix equal to the sample covariance matrix of \code{samples}. For a recent tutorial on bridge sampling, see Gronau et al. (in press).
 
   When \code{method = "warp3"}, the proposal distribution is a standard multivariate normal distribution and the posterior distribution is "warped" (Meng & Schilling, 2002) so that it has the same mean vector, covariance matrix, and skew as the samples. \code{method = "warp3"} takes approximately twice as long as \code{method = "normal"}.
 
   Note that for the \code{matrix} method, the lower and upper bound of a parameter cannot be a function of the bounds of another parameter. Furthermore, constraints that depend on multiple parameters of the model are not supported. This usually excludes, for example, parameters that constitute a covariance matrix or sets of parameters that need to sum to one.
 
-  However, if the retransformations are part of the model itself and the \code{log_posterior} accepts parameters on the real line and performs the appropriate Jacobian adjustments, such as done for \code{stanfit} objects, such constraints are obviously possible (i.e., we currently do not know of any parameter supported within Stan that does not work with the current implementation through a \code{stanfit} object).
+  However, if the retransformations are part of the model itself and the \code{log_posterior} accepts parameters on the real line and performs the appropriate Jacobian adjustments, such as done for \code{stanfit} and \code{stanreg} objects, such constraints are obviously possible (i.e., we currently do not know of any parameter supported within Stan that does not work with the current implementation through a \code{stanfit} object).
 
 \subsection{Parallel Computation}{
 On unix-like systems forking is used via \code{\link{mclapply}}. Hence elements needed for evaluation of \code{log_posterior} should be in the \code{\link{.GlobalEnv}}.
 
 On other OSes (e.g., Windows), things can get more complicated. For normal parallel computation, the \code{log_posterior} function can be passed as both function and function name. If the latter, it needs to exist in the environment specified in the \code{envir} argument. For parallel computation when using an \code{Rcpp} function, \code{log_posterior} can only be passed as the function name (i.e., character). This function needs to result from calling \code{sourceCpp} on the file specified in \code{rcppFile}.
 
-Due to the way \code{rstan} currently works, parallel computations with \code{stanfit} objects only work with forking (i.e., NOT on Windows).
+Due to the way \code{rstan} currently works, parallel computations with \code{stanfit} and \code{stanreg} objects only work with forking (i.e., NOT on Windows).
 }
 }
+\note{
+To be able to use a \code{stanreg} object for \code{samples}, the user crucially needs to have specified the \code{diagnostic_file} when fitting the model in \pkg{rstanarm}.
+}
+\section{Warning}{
+
+Note that the results depend strongly on the parameter priors. Therefore, it is strongly advised to think carefully about the priors before calculating marginal likelihoods. For example, the prior choices implemented in \pkg{rstanarm} or \pkg{brms} might not be optimal from a testing point of view. We recommend to use priors that have been chosen from a testing and not a purely estimation perspective.
+
+Also note that for testing, the number of posterior samples usually needs to be substantially larger than for estimation.
+}
+
 \examples{
 ## ------------------------------------------------------------------------
 ## Example 1: Estimating the Normalizing Constant of a Two-Dimensional
@@ -124,7 +162,7 @@ print(cbind(bridge_result$logml, analytical))
 ## ------------------------------------------------------------------------
 
 # for a full description of the example, see
-vignette("bridgesampling_example")
+vignette("bridgesampling_example_jags")
 
 library(R2jags)
 
@@ -167,10 +205,8 @@ getSamplesModelH0 <- function(data, niter = 52000, nburnin = 2000, nchains = 3) 
             model.file = textConnection(model),
             n.chains = nchains, n.iter = niter,
             n.burnin = nburnin, n.thin = 1)
-  cn <- colnames(s$BUGSoutput$sims.matrix)
-  samples_matrix <- s$BUGSoutput$sims.matrix[ ,-which(cn == "deviance")] # cut off deviance
 
-  return(samples_matrix)
+  return(s)
 
 }
 
@@ -194,10 +230,8 @@ getSamplesModelH1 <- function(data, niter = 52000, nburnin = 2000,
             model.file = textConnection(model),
             n.chains = nchains, n.iter = niter,
             n.burnin = nburnin, n.thin = 1)
-  cn <- colnames(s$BUGSoutput$sims.matrix)
-  samples_matrix <- s$BUGSoutput$sims.matrix[ ,-which(cn == "deviance")] # cut off deviance
 
-  return(samples_matrix)
+  return(s)
 
 }
 
@@ -240,15 +274,19 @@ log_posterior_H1 <- function(samples.row, data) {
 }
 
 # specify parameter bounds H0
-lb_H0 <- rep(-Inf, ncol(samples_H0))
-ub_H0 <- rep(Inf, ncol(samples_H0))
-names(lb_H0) <- names(ub_H0) <- colnames(samples_H0)
+cn <- colnames(samples_H0$BUGSoutput$sims.matrix)
+cn <- cn[cn != "deviance"]
+lb_H0 <- rep(-Inf, length(cn))
+ub_H0 <- rep(Inf, length(cn))
+names(lb_H0) <- names(ub_H0) <- cn
 lb_H0[[ "invTau2" ]] <- 0
 
 # specify parameter bounds H1
-lb_H1 <- rep(-Inf, ncol(samples_H1))
-ub_H1 <- rep(Inf, ncol(samples_H1))
-names(lb_H1) <- names(ub_H1) <- colnames(samples_H1)
+cn <- colnames(samples_H1$BUGSoutput$sims.matrix)
+cn <- cn[cn != "deviance"]
+lb_H1 <- rep(-Inf, length(cn))
+ub_H1 <- rep(Inf, length(cn))
+names(lb_H1) <- names(ub_H1) <- cn
 lb_H1[[ "invTau2" ]] <- 0
 
 
@@ -282,16 +320,37 @@ print(post2)
 
 }
 
+\dontrun{
+
+## ------------------------------------------------------------------------
+## Example 3: rstanarm
+## ------------------------------------------------------------------------
+library(rstanarm)
+
+# N.B.: remember to specify the diagnostic_file
+
+fit_1 <- stan_glm(mpg ~ wt + qsec + am, data = mtcars,
+                  chains = 2, cores = 2, iter = 5000,
+                  diagnostic_file = file.path(tempdir(), "df.csv"))
+bridge_1 <- bridge_sampler(fit_1)
+fit_2 <- update(fit_1, formula = . ~ . + cyl)
+bridge_2 <- bridge_sampler(fit_2, method = "warp3")
+bf(bridge_1, bridge_2)
+
+}
+
 }
 \references{
-Gronau, Q. F., Sarafoglou, A., Matzke, D., Ly, A., Boehm, U., Marsman, M., Leslie, D. S., Forster, J. J., Wagenmakers, E.-J., & Steingroever, H. (2017). \emph{A tutorial on bridge sampling}. Manuscript submitted for publication. \url{https://arxiv.org/abs/1703.05984} \cr \code{vignette("bridgesampling_tutorial")}
+Gronau, Q. F., Sarafoglou, A., Matzke, D., Ly, A., Boehm, U., Marsman, M., Leslie, D. S., Forster, J. J., Wagenmakers, E.-J., & Steingroever, H. (in press). A tutorial on bridge sampling. \emph{Journal of Mathematical Psychology}. \url{https://arxiv.org/abs/1703.05984} \cr \code{vignette("bridgesampling_tutorial")}
 
-Meng, X.-L., & Wong, W. H. (1996). Simulating ratios of normalizing constants via a simple identity: A theoretical exploration. \emph{Statistica Sinica}, 6, 831-860. \url{http://www3.stat.sinica.edu.tw/statistica/j6n4/j6n43/j6n43.htm}
+Gronau, Q. F., Wagenmakers, E.-J., Heck, D. W., & Matzke, D. (2017). \emph{A simple method for comparing complex models: Bayesian model comparison for hierarchical multinomial processing tree models using Warp-III bridge sampling}. Manuscript submitted for publication. \url{https://psyarxiv.com/yxhfm}
 
-Meng, X.-L., & Schilling, S. (2002). Warp bridge sampling. \emph{Journal of Computational and Graphical Statistics}, 11(3), 552-586. \url{http://dx.doi.org/10.1198/106186002457}
+Meng, X.-L., & Wong, W. H. (1996). Simulating ratios of normalizing constants via a simple identity: A theoretical exploration. \emph{Statistica Sinica, 6}, 831-860. \url{http://www3.stat.sinica.edu.tw/statistica/j6n4/j6n43/j6n43.htm}
 
-Overstall, A. M., & Forster, J. J. (2010). Default Bayesian model determination methods for generalised linear mixed models. \emph{Computational Statistics & Data Analysis}, 54, 3269-3288. \url{http://dx.doi.org/10.1016/j.csda.2010.03.008}
+Meng, X.-L., & Schilling, S. (2002). Warp bridge sampling. \emph{Journal of Computational and Graphical Statistics, 11(3)}, 552-586. \url{http://dx.doi.org/10.1198/106186002457}
+
+Overstall, A. M., & Forster, J. J. (2010). Default Bayesian model determination methods for generalised linear mixed models. \emph{Computational Statistics & Data Analysis, 54}, 3269-3288. \url{http://dx.doi.org/10.1016/j.csda.2010.03.008}
 }
 \author{
-Quentin F. Gronau and Henrik Singmann. Parallel computing (i.e., \code{cores > 1}) and the \code{stanfit} method use code from \code{rstan} by Jiaqing Guo, Jonah Gabry, and Ben Goodrich.
+Quentin F. Gronau and Henrik Singmann. Parallel computing (i.e., \code{cores > 1}) and the \code{stanfit} method use code from \code{rstan} by Jiaqing Guo, Jonah Gabry, and Ben Goodrich. Ben Goodrich added the \code{stanreg} method.
 }

@@ -2,18 +2,24 @@
 % Please edit documentation in R/bf.R
 \name{bf}
 \alias{bf}
+\alias{bayes_factor}
+\alias{bayes_factor.default}
 \alias{bf.bridge}
 \alias{bf.bridge_list}
 \alias{bf.default}
 \title{Bayes Factor(s) from Marginal Likelihoods}
 \usage{
-bf(x1, x2, log = FALSE)
+bf(x1, x2, log = FALSE, ...)
 
-\method{bf}{bridge}(x1, x2, log = FALSE)
+bayes_factor(x1, x2, log = FALSE, ...)
 
-\method{bf}{bridge_list}(x1, x2, log = FALSE)
+\method{bayes_factor}{default}(x1, x2, log = FALSE, ...)
 
-\method{bf}{default}(x1, x2, log = FALSE)
+\method{bf}{bridge}(x1, x2, log = FALSE, ...)
+
+\method{bf}{bridge_list}(x1, x2, log = FALSE, ...)
+
+\method{bf}{default}(x1, x2, log = FALSE, ...)
 }
 \arguments{
 \item{x1}{Object of class \code{"bridge"} or \code{"bridge_list"} as returned from \code{\link{bridge_sampler}}. Additionally, the default method assumes that \code{x1} is a single numeric log marginal likelihood (e.g., from \code{\link{logml}}) and will throw an error otherwise.}
@@ -21,6 +27,8 @@ bf(x1, x2, log = FALSE)
 \item{x2}{Object of class \code{"bridge"} or \code{"bridge_list"} as returned from \code{\link{bridge_sampler}}. Additionally, the default method assumes that \code{x2} is a single numeric log marginal likelihood (e.g., from \code{\link{logml}}) and will throw an error otherwise.}
 
 \item{log}{Boolean. If \code{TRUE}, the function returns the log of the Bayes factor. Default is \code{FALSE}.}
+
+\item{...}{currently not used here, but can be used by other methods.}
 }
 \value{
 For the default method returns a list of class \code{"bf_default"} with components:
@@ -45,16 +53,16 @@ For the method for \code{"bridge_list"} objects returns a list of class \code{"b
 }
 }
 \description{
-Generic function that computes Bayes factor(s) from marginal likelihoods.
+Generic function that computes Bayes factor(s) from marginal likelihoods. \code{bayes_factor()} is simply an (S3 generic) alias for \code{bf()}.
 }
 \details{
 Computes the Bayes factor (Kass & Raftery, 1995) in favor of the model associated with \code{x1} over the model associated with \code{x2}.
 }
 \note{
-For examples, see \code{\link{bridge_sampler}} and the accompanying vignette: \cr \code{vignette("bridgesampling_example")}
+For examples, see \code{\link{bridge_sampler}} and the accompanying vignettes: \cr \code{vignette("bridgesampling_example_jags")} \cr \code{vignette("bridgesampling_example_stan")}
 }
 \references{
-Kass, R. E., & Raftery, A. E. (1995). Bayes factors. \emph{Journal of the American Statistical Association}, 90(430), 773-795. \url{http://dx.doi.org/10.1080/01621459.1995.10476572}
+Kass, R. E., & Raftery, A. E. (1995). Bayes factors. \emph{Journal of the American Statistical Association, 90(430)}, 773-795. \url{http://dx.doi.org/10.1080/01621459.1995.10476572}
 }
 \author{
 Quentin F. Gronau
