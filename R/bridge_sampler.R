@@ -69,6 +69,8 @@
 #'Overstall, A. M., & Forster, J. J. (2010). Default Bayesian model determination methods for generalised linear mixed models. \emph{Computational Statistics & Data Analysis, 54}, 3269-3288. \url{http://dx.doi.org/10.1016/j.csda.2010.03.008}
 #' @example examples/example.bridge_sampler.R
 #'
+#' @seealso \code{\link{bf}} allows the user to calculate Bayes factors and \code{\link{post_prob}} allows the user to calculate posterior model probabilities from bridge sampling estimates. \code{\link{bridge-methods}} lists some additional methods that automatically invoke the \code{\link{error_measures}} function.
+#'
 #' @importFrom mvtnorm rmvnorm dmvnorm
 #' @importFrom Matrix nearPD
 #' @import Brobdingnag
@@ -182,12 +184,21 @@ bridge_sampler.mcmc.list <- function(samples = NULL, log_posterior = NULL, ..., 
                                      packages = NULL, varlist = NULL, envir = .GlobalEnv,
                                      rcppFile = NULL, maxiter = 1000, silent = FALSE,
                                      verbose = FALSE) {
-
   # split samples in two parts
   nr <- nrow(samples[[1]])
   samples4fit_index <- seq_len(nr) %in% seq_len(round(nr/2))
   samples_4_fit_tmp <- samples[samples4fit_index,,drop=FALSE]
   samples_4_fit_tmp <- do.call("rbind", samples_4_fit_tmp)
+
+  # check lb and ub
+  if (!is.numeric(lb))
+    stop("lb needs to be numeric", call. = FALSE)
+  if (!is.numeric(ub))
+    stop("ub needs to be numeric", call. = FALSE)
+  if (!all(colnames(samples_4_fit_tmp) %in% names(lb)))
+    stop("lb does not contain all parameters.", call. = FALSE)
+  if (!all(colnames(samples_4_fit_tmp) %in% names(ub)))
+    stop("ub does not contain all parameters.", call. = FALSE)
 
   # transform parameters to real line
   tmp <- .transform2Real(samples_4_fit_tmp, lb, ub)
@@ -410,24 +421,3 @@ bridge_sampler.runjags <- function(samples = NULL, log_posterior = NULL, ..., da
 }
 
 
-######## Methods for bridge objects:
-
-#' @method print bridge
-#' @export
-print.bridge <- function(x, ...) {
-
-  cat("Bridge sampling estimate of the log marginal likelihood: ",
-      round(x$logml, 5), "\nEstimate obtained in ", x$niter,
-      " iteration(s) via method \"", x$method, "\".", sep = "")
-}
-
-#' @method print bridge_list
-#' @export
-print.bridge_list <- function(x, na.rm = TRUE, ...) {
-
-  cat("Median of ", x$repetitions,  " bridge sampling estimates of the log marginal likelihood: ",
-      round(median(x$logml, na.rm = na.rm), 5), "\nRange of estimates: ", round(range(x$logml, na.rm=na.rm)[1], 5), " to ",
-      round(range(x$logml, na.rm = na.rm)[2], 5),
-      "\nInterquartile range: ", round(stats::IQR(x$logml, na.rm = na.rm), 5), "\nMethod: ", x$method, sep = "")
-  if (any(is.na(x$logml))) warning(sum(is.na(x$logml))," bridge sampling estimate(s) are NAs.", call. = FALSE)
-}

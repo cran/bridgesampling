@@ -12,7 +12,7 @@
 
 <meta name="author" content="Quentin F. Gronau" />
 
-<meta name="date" content="2017-10-20" />
+<meta name="date" content="2017-12-18" />
 
 <title>Bayesian One-Sample T-Test (Stan)</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Bayesian One-Sample T-Test (Stan)</h1>
 <h4 class="author"><em>Quentin F. Gronau</em></h4>
-<h4 class="date"><em>2017-10-20</em></h4>
+<h4 class="date"><em>2017-12-18</em></h4>
 
 
 <div id="TOC">
@@ -86,7 +86,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </ul>
 </div>
 
-<p>In this vignette, we exlpain how we can compute the (log) marginal likelihood and the Bayes factor for models fitted in <code>Stan</code>. This approach has the advantage that the user only needs to pass the fitted <code>stanfit</code> object which contains all information that is necessary to compute the (log) marginal likelihood. Here we show how one can conduct a Bayesian one-sample t-test as implemented in the <code>BayesFactor</code> package (Morey &amp; Rouder, 2015).</p>
+<p>In this vignette, we explain how we can compute the (log) marginal likelihood and the Bayes factor for models fitted in <code>Stan</code>. This approach has the advantage that the user only needs to pass the fitted <code>stanfit</code> object which contains all information that is necessary to compute the (log) marginal likelihood. Here we show how one can conduct a Bayesian one-sample t-test as implemented in the <code>BayesFactor</code> package (Morey &amp; Rouder, 2015).</p>
 <div id="model" class="section level2">
 <h2>Model</h2>
 <p>The Bayesian one-sample t-test makes the assumption that the observations are normally distributed with mean <span class="math inline">\(\mu\)</span> and variance <span class="math inline">\(\sigma^2\)</span>. The model is then reparametrized in terms of the standardized effect size <span class="math inline">\(\delta = \mu/\sigma\)</span>. For the standardized effect size, a Cauchy prior with location zero and scale <span class="math inline">\(r = 1/\sqrt{2}\)</span> is used. For the variance <span class="math inline">\(\sigma^2\)</span>, Jeffreys’s prior is used: <span class="math inline">\(p(\sigma^2) \propto 1/\sigma^2\)</span>.</p>
