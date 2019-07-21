@@ -37,13 +37,16 @@
   V <- as.matrix(nearPD(V_tmp)$mat) # make sure that V is positive-definite
 
   # sample from multivariate normal distribution and evaluate for posterior samples and generated samples
-  q12 <- dmvnorm(samples_4_iter, mean = m, sigma = V, log = TRUE)
+  q12 <- mvnfast::dmvn(samples_4_iter, mu = m, sigma = V, log = TRUE,
+                       ncores = cores)
   gen_samples <- vector(mode = "list", length = repetitions)
   q22 <- vector(mode = "list", length = repetitions)
   for (i in seq_len(repetitions)) {
-    gen_samples[[i]] <- rmvnorm(n_post, mean = m, sigma = V)
+    gen_samples[[i]] <- mvnfast::rmvn(n_post, mu = m, sigma = V,
+                                      ncores = cores)
     colnames(gen_samples[[i]]) <- colnames(samples_4_iter)
-    q22[[i]] <- dmvnorm(gen_samples[[i]], mean = m, sigma = V, log = TRUE)
+    q22[[i]] <- mvnfast::dmvn(gen_samples[[i]], mu = m, sigma = V, log = TRUE,
+                              ncores = cores)
   }
 
   # evaluate log of likelihood times prior for posterior samples and generated samples
@@ -94,6 +97,22 @@
     parallel::stopCluster(cl)
     }
   }
+  if(verbose) {
+    print("summary(q12): (log_dens of proposal (i.e., with dmvnorm) for posterior samples)")
+    print(summary(q12))
+    print("summary(q22): (log_dens of proposal (i.e., with dmvnorm) for generated samples)")
+    print(lapply(q22, summary))
+    print("summary(q11): (log_dens of posterior (i.e., with log_posterior) for posterior samples)")
+    print(summary(q11))
+    print("summary(q21): (log_dens of posterior (i.e., with log_posterior) for generated samples)")
+    print(lapply(q21, summary))
+    .PROPOSALS <- vector("list", repetitions)
+    # for (i in seq_len(repetitions)) {
+    #   .PROPOSALS[[i]] <- .invTransform2Real(gen_samples[[i]], lb, ub, param_types)
+    # }
+    # assign(".PROPOSALS", .PROPOSALS, pos = .GlobalEnv)
+    # message("All proposal samples written to .GlobalEnv as .PROPOSALS")
+  }
   if (any(is.infinite(q11))) {
     warning(sum(is.infinite(q11)), " of the ", length(q11)," log_prob() evaluations on the posterior draws produced -Inf/Inf.", call. = FALSE)
   }
@@ -107,22 +126,19 @@
     q11[is.na(q11)] <- -Inf
   }
   for (i in seq_len(repetitions)) {
+    if (all(is.na(q21[[i]]))) {
+      stop("Evaluations of log_prob() on all proposal draws produced NA.\n",
+           "E.g., rounded to 3 digits (use verbose = TRUE for all proposal samples):\n",
+           deparse(round(
+             .invTransform2Real(gen_samples[[i]], lb, ub, param_types)[1,],
+             3), width.cutoff = 500L),
+           call. = FALSE)
+    }
     if (any(is.na(q21[[i]]))) {
-      warning(sum(is.na(q21[[i]])), " evaluation(s) of log_prob() on the proposal draws produced NA nd have been replaced by -Inf.", call. = FALSE)
+      warning(sum(is.na(q21[[i]])), " evaluation(s) of log_prob() on the proposal draws produced NA and have been replaced by -Inf.", call. = FALSE)
       q21[[i]][is.na(q21[[i]])] <- -Inf
     }
   }
-  if(verbose) {
-    print("summary(q12): (log_dens of proposal for posterior samples)")
-    print(summary(q12))
-    print("summary(q22): (log_dens of proposal for generated samples)")
-    print(lapply(q22, summary))
-    print("summary(q11): (log_dens of posterior for posterior samples)")
-    print(summary(q11))
-    print("summary(q21): (log_dens of posterior for generated samples)")
-    print(lapply(q21, summary))
-  }
-
   logml <- numeric(repetitions)
   niter <- numeric(repetitions)
   # run iterative updating scheme to compute log of marginal likelihood
