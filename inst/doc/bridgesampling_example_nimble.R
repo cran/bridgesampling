@@ -1,4 +1,4 @@
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(bridgesampling)
 
 ### generate data ###
@@ -13,14 +13,14 @@ theta <- rnorm(n, mu, sqrt(tau2))
 y <- rnorm(n, theta, sqrt(sigma2))
   
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  ### set prior parameters ###
 #  mu0 <- 0
 #  tau20 <- 1
 #  alpha <- 1
 #  beta <- 1
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  library("nimble")
 #  
 #  # models
@@ -53,7 +53,7 @@ y <- rnorm(n, theta, sqrt(sigma2))
 #  cmodelH1 <- compileNimble(modelH1) # make compiled version from generated C++
 #  
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  
 #  # build MCMC functions, skipping customization of the configuration.
 #  mcmcH0 <- buildMCMC(modelH0,
@@ -73,41 +73,41 @@ y <- rnorm(n, theta, sqrt(sigma2))
 #  samplesH1 <- runMCMC(cmcmcH1, niter = 1e5, nburnin = 1000, nchains = 2,
 #                       progressBar = FALSE)
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 load(system.file("extdata/", "vignette_example_nimble.RData",
                      package = "bridgesampling"))
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # compute log marginal likelihood via bridge sampling for H0
 #  H0.bridge <- bridge_sampler(cmcmcH0, silent = TRUE)
 #  
 #  # compute log marginal likelihood via bridge sampling for H1
 #  H1.bridge <- bridge_sampler(cmcmcH1, silent = TRUE)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 print(H0.bridge)
 print(H1.bridge)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # compute percentage errors
 #  H0.error <- error_measures(H0.bridge)$percentage
 #  H1.error <- error_measures(H1.bridge)$percentage
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 print(H0.error)
 print(H1.error)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # compute Bayes factor
 BF01 <- bf(H0.bridge, H1.bridge)
 print(BF01)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # compute posterior model probabilities (assuming equal prior model probabilities)
 post1 <- post_prob(H0.bridge, H1.bridge)
 print(post1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # compute posterior model probabilities (using user-specified prior model probabilities)
 post2 <- post_prob(H0.bridge, H1.bridge, prior_prob = c(.6, .4))
 print(post2)

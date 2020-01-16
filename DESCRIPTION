@@ -1,7 +1,7 @@
 Package: bridgesampling
 Type: Package
 Title: Bridge Sampling for Marginal Likelihoods and Bayes Factors
-Version: 0.7-2
+Version: 0.8-1
 Authors@R: c(person(given="Quentin F.", family="Gronau", role=c("aut", "cre"),
              email="Quentin.F.Gronau@gmail.com",
              comment=c(ORCID="0000-0001-5510-6943")),
@@ -17,7 +17,7 @@ Authors@R: c(person(given="Quentin F.", family="Gronau", role=c("aut", "cre"),
              person("Perry", "de Valpine", role = c("ctb"))
              )
 Depends: R (>= 3.0.0)
-Imports: mvnfast, Matrix, Brobdingnag, stringr, coda, parallel, scales,
+Imports: mvtnorm, Matrix, Brobdingnag, stringr, coda, parallel, scales,
         utils, methods
 Suggests: testthat, Rcpp, RcppEigen, R2jags, rjags, runjags, knitr,
         rmarkdown, R.rsp, BayesFactor, rstan, rstanarm, nimble,
@@ -28,11 +28,11 @@ Description: Provides functions for estimating marginal likelihoods, Bayes
     <http://www3.stat.sinica.edu.tw/statistica/j6n4/j6n43/j6n43.htm>).
 License: GPL (>= 2)
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 VignetteBuilder: knitr, R.rsp
 URL: https://github.com/quentingronau/bridgesampling
 NeedsCompilation: no
-Packaged: 2019-06-29 07:53:28 UTC; henrik
+Packaged: 2020-01-16 07:36:08 UTC; henrik
 Author: Quentin F. Gronau [aut, cre] (<https://orcid.org/0000-0001-5510-6943>),
   Henrik Singmann [aut] (<https://orcid.org/0000-0002-4842-3657>),
   Jonathan J. Forster [ctb],
@@ -45,4 +45,4 @@ Author: Quentin F. Gronau [aut, cre] (<https://orcid.org/0000-0001-5510-6943>),
   Perry de Valpine [ctb]
 Maintainer: Quentin F. Gronau <Quentin.F.Gronau@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-07-21 22:40:06 UTC
+Date/Publication: 2020-01-16 13:40:11 UTC

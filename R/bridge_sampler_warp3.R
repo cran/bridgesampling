@@ -38,19 +38,14 @@
   L <- t(chol(V))
 
   # sample from multivariate normal distribution and evaluate for posterior samples and generated samples
-  tmp_mu <- rep(0, ncol(samples_4_fit))
-  tmp_sigma <- diag(ncol(samples_4_fit))
-  q12 <- mvnfast::dmvn(
-    (samples_4_iter - matrix(m, nrow = n_post, ncol = length(m), byrow = TRUE)) %*%
-      t(solve(L)), mu = tmp_mu, sigma = tmp_sigma, log = TRUE, ncores = cores)
+  q12 <- dmvnorm((samples_4_iter - matrix(m, nrow = n_post, ncol = length(m), byrow = TRUE)) %*%
+                   t(solve(L)), sigma = diag(ncol(samples_4_fit)), log = TRUE)
   q22 <- vector(mode = "list", length = repetitions)
   gen_samples <- vector(mode = "list", length = repetitions)
   for (i in seq_len(repetitions)) {
-    gen_samples[[i]] <- mvnfast::rmvn(n_post, mu = tmp_mu, sigma = tmp_sigma,
-                                      ncores = cores)
+    gen_samples[[i]] <- rmvnorm(n_post, sigma = diag(ncol(samples_4_fit)))
     colnames(gen_samples[[i]]) <- colnames(samples_4_iter)
-    q22[[i]] <- mvnfast::dmvn(gen_samples[[i]], mu = tmp_mu, sigma = tmp_sigma,
-                              log = TRUE, ncores = cores)
+    q22[[i]] <- dmvnorm(gen_samples[[i]], sigma = diag(ncol(samples_4_fit)), log = TRUE)
   }
 
   e <- as.brob( exp(1) )
@@ -202,7 +197,7 @@
       warning("logml could not be estimated within maxiter, rerunning with adjusted starting value. \nEstimate might be more variable than usual.", call. = FALSE)
       lr <- length(tmp$r_vals)
       # use geometric mean as starting value
-      r0_2 <- sqrt(tmp$r_vals[lr - 1]*tmp$r_vals[lr])
+      r0_2 <- sqrt(tmp$r_vals[[lr - 1]] * tmp$r_vals[[lr]])
       tmp <- .run.iterative.scheme(q11 = q11, q12 = q12, q21 = q21[[i]], q22 = q22[[i]],
                                    r0 = r0_2, tol = tol2, L = L, method = "warp3",
                                    maxiter = maxiter, silent = silent,

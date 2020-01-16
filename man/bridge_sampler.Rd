@@ -14,51 +14,145 @@
 \usage{
 bridge_sampler(samples, ...)
 
-\method{bridge_sampler}{stanfit}(samples = NULL,
-  stanfit_model = samples, repetitions = 1, method = "normal",
-  cores = 1, use_neff = TRUE, maxiter = 1000, silent = FALSE,
-  verbose = FALSE, ...)
+\method{bridge_sampler}{stanfit}(
+  samples = NULL,
+  stanfit_model = samples,
+  repetitions = 1,
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  maxiter = 1000,
+  silent = FALSE,
+  verbose = FALSE,
+  ...
+)
 
-\method{bridge_sampler}{mcmc.list}(samples = NULL,
-  log_posterior = NULL, ..., data = NULL, lb = NULL, ub = NULL,
-  repetitions = 1, param_types = rep("real", ncol(samples[[1]])),
-  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
-  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL,
-  maxiter = 1000, silent = FALSE, verbose = FALSE)
+\method{bridge_sampler}{mcmc.list}(
+  samples = NULL,
+  log_posterior = NULL,
+  ...,
+  data = NULL,
+  lb = NULL,
+  ub = NULL,
+  repetitions = 1,
+  param_types = rep("real", ncol(samples[[1]])),
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  packages = NULL,
+  varlist = NULL,
+  envir = .GlobalEnv,
+  rcppFile = NULL,
+  maxiter = 1000,
+  silent = FALSE,
+  verbose = FALSE
+)
 
-\method{bridge_sampler}{mcmc}(samples = NULL, log_posterior = NULL,
-  ..., data = NULL, lb = NULL, ub = NULL, repetitions = 1,
-  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
-  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL,
-  maxiter = 1000, param_types = rep("real", ncol(samples)),
-  silent = FALSE, verbose = FALSE)
+\method{bridge_sampler}{mcmc}(
+  samples = NULL,
+  log_posterior = NULL,
+  ...,
+  data = NULL,
+  lb = NULL,
+  ub = NULL,
+  repetitions = 1,
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  packages = NULL,
+  varlist = NULL,
+  envir = .GlobalEnv,
+  rcppFile = NULL,
+  maxiter = 1000,
+  param_types = rep("real", ncol(samples)),
+  silent = FALSE,
+  verbose = FALSE
+)
 
-\method{bridge_sampler}{matrix}(samples = NULL, log_posterior = NULL,
-  ..., data = NULL, lb = NULL, ub = NULL, repetitions = 1,
-  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
-  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL,
-  maxiter = 1000, param_types = rep("real", ncol(samples)),
-  silent = FALSE, verbose = FALSE)
+\method{bridge_sampler}{matrix}(
+  samples = NULL,
+  log_posterior = NULL,
+  ...,
+  data = NULL,
+  lb = NULL,
+  ub = NULL,
+  repetitions = 1,
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  packages = NULL,
+  varlist = NULL,
+  envir = .GlobalEnv,
+  rcppFile = NULL,
+  maxiter = 1000,
+  param_types = rep("real", ncol(samples)),
+  silent = FALSE,
+  verbose = FALSE
+)
 
-\method{bridge_sampler}{stanreg}(samples, repetitions = 1,
-  method = "normal", cores = 1, use_neff = TRUE, maxiter = 1000,
-  silent = FALSE, verbose = FALSE, ...)
+\method{bridge_sampler}{stanreg}(
+  samples,
+  repetitions = 1,
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  maxiter = 1000,
+  silent = FALSE,
+  verbose = FALSE,
+  ...
+)
 
-\method{bridge_sampler}{rjags}(samples = NULL, log_posterior = NULL,
-  ..., data = NULL, lb = NULL, ub = NULL, repetitions = 1,
-  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
-  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL,
-  maxiter = 1000, silent = FALSE, verbose = FALSE)
+\method{bridge_sampler}{rjags}(
+  samples = NULL,
+  log_posterior = NULL,
+  ...,
+  data = NULL,
+  lb = NULL,
+  ub = NULL,
+  repetitions = 1,
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  packages = NULL,
+  varlist = NULL,
+  envir = .GlobalEnv,
+  rcppFile = NULL,
+  maxiter = 1000,
+  silent = FALSE,
+  verbose = FALSE
+)
 
-\method{bridge_sampler}{runjags}(samples = NULL, log_posterior = NULL,
-  ..., data = NULL, lb = NULL, ub = NULL, repetitions = 1,
-  method = "normal", cores = 1, use_neff = TRUE, packages = NULL,
-  varlist = NULL, envir = .GlobalEnv, rcppFile = NULL,
-  maxiter = 1000, silent = FALSE, verbose = FALSE)
+\method{bridge_sampler}{runjags}(
+  samples = NULL,
+  log_posterior = NULL,
+  ...,
+  data = NULL,
+  lb = NULL,
+  ub = NULL,
+  repetitions = 1,
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  packages = NULL,
+  varlist = NULL,
+  envir = .GlobalEnv,
+  rcppFile = NULL,
+  maxiter = 1000,
+  silent = FALSE,
+  verbose = FALSE
+)
 
-\method{bridge_sampler}{MCMC_refClass}(samples, repetitions = 1,
-  method = "normal", cores = 1, use_neff = TRUE, maxiter = 1000,
-  silent = FALSE, verbose = FALSE, ...)
+\method{bridge_sampler}{MCMC_refClass}(
+  samples,
+  repetitions = 1,
+  method = "normal",
+  cores = 1,
+  use_neff = TRUE,
+  maxiter = 1000,
+  silent = FALSE,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{samples}{an \code{mcmc.list} object, a fitted \code{stanfit} object, a
@@ -83,14 +177,13 @@ done before \code{samples} is loaded).}
 
 \item{method}{either \code{"normal"} or \code{"warp3"}.}
 
-\item{cores}{number of cores used for evaluating \code{log_posterior} and when
-calling \pkg{mvnfast} functions. For evaluating \code{log_posterior}, on
+\item{cores}{number of cores used for evaluating \code{log_posterior}. On
 unix-like systems (where \code{.Platform$OS.type == "unix"} evaluates to
 \code{TRUE}; e.g., Linux and Mac OS) forking via \code{\link{mclapply}} is
-used. Hence, elements needed for evaluation should be in the
+used. Hence elements needed for evaluation should be in the
 \code{\link{.GlobalEnv}}. For other systems (e.g., Windows)
 \code{\link{makeCluster}} is used and further arguments specified below will
-be used. \pkg{mvnfast} uses OpenMP.}
+be used.}
 
 \item{use_neff}{Boolean which determines whether the effective sample size is
 used in the optimal bridge function. Default is TRUE. If FALSE, the number
@@ -106,7 +199,7 @@ Default is 1,000 to avoid infinite loops.}
 iterations of the updating scheme to the console. Default is FALSE.}
 
 \item{verbose}{Boolean. Should internal debug information be printed to
-console? Default is FALSE.}
+console? Default is \code{FALSE}.}
 
 \item{log_posterior}{function or name of function that takes a parameter
 vector and the \code{data} as input and returns the log of the unnormalized
@@ -236,10 +329,10 @@ To be able to use a \code{stanreg} object for \code{samples}, the user
 ##            Standard Normal Distribution
 ## ------------------------------------------------------------------------
 
-library("bridgesampling")
-library("mvnfast")
+library(bridgesampling)
+library(mvtnorm)
 
-samples <- rmvn(1e4, mu = rep(0, 2), sigma = diag(2))
+samples <- rmvnorm(1e4, mean = rep(0, 2), sigma = diag(2))
 colnames(samples) <- c("x1", "x2")
 log_density <- function(samples.row, data) {
   -.5*t(samples.row) \%*\% samples.row

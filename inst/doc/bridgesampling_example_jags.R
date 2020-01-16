@@ -1,4 +1,4 @@
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(bridgesampling)
 
 ### generate data ###
@@ -13,14 +13,14 @@ theta <- rnorm(n, mu, sqrt(tau2))
 y <- rnorm(n, theta, sqrt(sigma2))
   
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  ### set prior parameters ###
 #  mu0 <- 0
 #  tau20 <- 1
 #  alpha <- 1
 #  beta <- 1
 
-## ---- eval=FALSE---------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  library(R2jags)
 #  
 #  ### functions to get posterior samples ###
@@ -83,7 +83,7 @@ y <- rnorm(n, theta, sqrt(sigma2))
 #  samples_H1 <- getSamplesModelH1(data_H1)
 #  
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  ### functions for evaluating the unnormalized posteriors on log scale ###
 #  
 #  log_posterior_H0 <- function(samples.row, data) {
@@ -112,7 +112,7 @@ y <- rnorm(n, theta, sqrt(sigma2))
 #  }
 #  
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # specify parameter bounds H0
 #  cn <- colnames(samples_H0$BUGSoutput$sims.matrix)
 #  cn <- cn[cn != "deviance"]
@@ -129,11 +129,11 @@ y <- rnorm(n, theta, sqrt(sigma2))
 #  names(lb_H1) <- names(ub_H1) <- cn
 #  lb_H1[[ "invTau2" ]] <- 0
 
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
 load(system.file("extdata/", "vignette_example_jags.RData",
                      package = "bridgesampling"))
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # compute log marginal likelihood via bridge sampling for H0
 #  H0.bridge <- bridge_sampler(samples = samples_H0, data = data_H0,
 #                              log_posterior = log_posterior_H0, lb = lb_H0,
@@ -144,30 +144,30 @@ load(system.file("extdata/", "vignette_example_jags.RData",
 #                              log_posterior = log_posterior_H1, lb = lb_H1,
 #                              ub = ub_H1, silent = TRUE)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 print(H0.bridge)
 print(H1.bridge)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # compute percentage errors
 #  H0.error <- error_measures(H0.bridge)$percentage
 #  H1.error <- error_measures(H1.bridge)$percentage
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 print(H0.error)
 print(H1.error)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # compute Bayes factor
 BF01 <- bf(H0.bridge, H1.bridge)
 print(BF01)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # compute posterior model probabilities (assuming equal prior model probabilities)
 post1 <- post_prob(H0.bridge, H1.bridge)
 print(post1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # compute posterior model probabilities (using user-specified prior model probabilities)
 post2 <- post_prob(H0.bridge, H1.bridge, prior_prob = c(.6, .4))
 print(post2)
