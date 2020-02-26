@@ -1,7 +1,7 @@
 Package: bridgesampling
 Type: Package
 Title: Bridge Sampling for Marginal Likelihoods and Bayes Factors
-Version: 0.8-1
+Version: 1.0-0
 Authors@R: c(person(given="Quentin F.", family="Gronau", role=c("aut", "cre"),
              email="Quentin.F.Gronau@gmail.com",
              comment=c(ORCID="0000-0001-5510-6943")),
@@ -26,13 +26,14 @@ Description: Provides functions for estimating marginal likelihoods, Bayes
     factors, posterior model probabilities, and normalizing constants in general,
     via different versions of bridge sampling (Meng & Wong, 1996, 
     <http://www3.stat.sinica.edu.tw/statistica/j6n4/j6n43/j6n43.htm>).
+    Gronau, Singmann, & Wagenmakers (2020) <doi:10.18637/jss.v092.i10>.
 License: GPL (>= 2)
 LazyData: true
 RoxygenNote: 7.0.2
 VignetteBuilder: knitr, R.rsp
 URL: https://github.com/quentingronau/bridgesampling
 NeedsCompilation: no
-Packaged: 2020-01-16 07:36:08 UTC; henrik
+Packaged: 2020-02-25 23:50:08 UTC; henrik
 Author: Quentin F. Gronau [aut, cre] (<https://orcid.org/0000-0001-5510-6943>),
   Henrik Singmann [aut] (<https://orcid.org/0000-0002-4842-3657>),
   Jonathan J. Forster [ctb],
@@ -45,4 +46,4 @@ Author: Quentin F. Gronau [aut, cre] (<https://orcid.org/0000-0001-5510-6943>),
   Perry de Valpine [ctb]
 Maintainer: Quentin F. Gronau <Quentin.F.Gronau@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-01-16 13:40:11 UTC
+Date/Publication: 2020-02-26 12:30:02 UTC
