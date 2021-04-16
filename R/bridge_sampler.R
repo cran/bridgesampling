@@ -167,12 +167,12 @@
 #'
 #'  Meng, X.-L., & Schilling, S. (2002). Warp bridge sampling. \emph{Journal of
 #'  Computational and Graphical Statistics, 11(3)}, 552-586.
-#'  \url{http://dx.doi.org/10.1198/106186002457}
+#'  \doi{10.1198/106186002457}
 #'
 #'  Overstall, A. M., & Forster, J. J. (2010). Default Bayesian model
 #'  determination methods for generalised linear mixed models.
 #'  \emph{Computational Statistics & Data Analysis, 54}, 3269-3288.
-#'  \url{http://dx.doi.org/10.1016/j.csda.2010.03.008}
+#'  \doi{10.1016/j.csda.2010.03.008}
 #'@example examples/example.bridge_sampler.R
 #'
 #'@seealso \code{\link{bf}} allows the user to calculate Bayes factors and
@@ -197,6 +197,11 @@ bridge_sampler.stanfit <- function(samples = NULL, stanfit_model = samples,
                                    repetitions = 1, method = "normal", cores = 1,
                                    use_neff = TRUE, maxiter = 1000, silent = FALSE,
                                    verbose = FALSE, ...) {
+    # cores > 1 only for unix:
+  if (!(.Platform$OS.type == "unix") & (cores != 1)) {
+    warning("cores > 1 only possible on Unix/MacOs. Uses 'core = 1' instead.", call. = FALSE)
+    cores <- 1L
+  }
 
   # convert samples into matrix
   if (!requireNamespace("rstan")) stop("package rstan required")
@@ -245,12 +250,6 @@ bridge_sampler.stanfit <- function(samples = NULL, stanfit_model = samples,
 
   colnames(samples_4_iter) <- paste0("trans_", parameters)
   colnames(samples_4_fit) <- paste0("trans_", parameters)
-
-  # cores > 1 only for unix:
-  if (!(.Platform$OS.type == "unix") & (cores != 1)) {
-    warning("cores > 1 only possible on Unix/MacOs. Uses 'core = 1' instead.", call. = FALSE)
-    cores <- 1L
-  }
 
   # run bridge sampling
   if (cores == 1) {
